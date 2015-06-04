@@ -2,11 +2,17 @@
 Utilities to get shows, and individual media files
 """
 from collections import namedtuple
+import time
 
 import arrow
 from bs4 import BeautifulSoup
+from flask import current_app
 from pydub import AudioSegment
 import requests
+
+from underground_garage.app import celery
+from underground_garage.app import db
+from underground_garage.models import Show
 
 
 URL_STUB = 'http://undergroundgarage.com'
@@ -136,6 +142,12 @@ def showinfo(show_url):
     """
     showinfo = namedtuple('ShowInfo', 'number title date description')
     r = requests.get(show_url)
+    if r.status_code != 200:
+        while True:
+            time.sleep(10)
+            r = requests.get(show_url)
+            if r.status_code == 200:
+                break
     soup = BeautifulSoup(r.text, 'html.parser')
     number = int(soup.title.contents[0].split('-')[0].strip().split(' ')[1].strip(':'))
     title = soup.title.contents[0].split('-')[1].strip()
@@ -145,6 +157,7 @@ def showinfo(show_url):
     return showinfo(number=number, title=title, date=dt, description=desc)
 
 
+@celery.task
 def combinelist(playlist, filename='list.mp3'):
     """
     Combines a list of mp3 urls into a single file
@@ -158,10 +171,12 @@ def combinelist(playlist, filename='list.mp3'):
     sound.export(filename, format='mp3')
 
 
+@celery.task
 def updateshows():
-    from flask import current_app
-    from underground_garage.app import db
-    from underground_garage.models import Show
+    """
+    Get the current list of shows in the archive,
+    then add the urls to the database
+    """
     with current_app.app_context():
         print('Updating shows')
         showlist = showsinarchive()
@@ -175,3 +190,31 @@ def updateshows():
         for obj in db.session:
             print obj
         db.session.commit()
+    without = showswithout()
+    print without
+    for show in without:
+        updateshowdetails.delay(show.url)
+
+
+@celery.task
+def updateshowdetails(url):
+    """
+    Update the details of a show by url
+    """
+    print('Updating details for {url}'.format(url=url))
+    info = showinfo(url)
+    s = Show.query.filter_by(url=url).first()
+    s.name = info.title
+    s.episode = info.number
+    s.dt = info.date
+    s.description = info.description
+    db.session.add(s)
+    db.session.commit()
+    time.sleep(1)
+
+
+def showswithout():
+    """
+    Return a list of urls for shows without an episode
+    """
+    return Show.query.filter_by(episode=None).all()

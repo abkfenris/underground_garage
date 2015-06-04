@@ -1,0 +1,10 @@
+<rss>
+    <channel>
+        {% for show in Show.query.order_by(Show.episode.desc()).all() %}
+        <item>
+            <title>{{ show.episode }} - {{ show.name }}</title>
+            <link>{{ show.url }}</link>
+            <descirption>{{ show.description }}</description>
+        {% endfor %}
+    </channel>
+</rss>

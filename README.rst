@@ -21,3 +21,13 @@ a podcast.
 
 The homepage gives a listing of shows, if the file has been created or not, and
 lets you download the file if it is, or ask the app to create the file.
+
+To fire it up, start by running `pip install -r requirements/prod.txt`.
+Start up postgresql and create a database called underground_garage.
+Then 'redis-server' in one terminal,
+'celery worker -A celery_worker.celery --loglevel=info' in another,
+and finally `python manage.py runserver` in a third.
+
+Navigate to 127.0.0.1:631:5000 (or whatever the manage.py terminal tells you),
+and hit update, and it will start getting information about shows and updating
+details.

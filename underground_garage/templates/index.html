@@ -15,9 +15,19 @@
     <div class="container">
         <a href="{{ url_for('main.update') }}">Update</a>
         <table class='table table-striped table-hover'>
-            <thead><tr><th>Episode</th><th>URL</th></tr></thead>
-            {% for show in Show.query.all() %}
-                <tr><td>{% if show.episode %}{{ show.episode }}{% endif %}</td><td>{{ show.url }}</td></tr>
+            <thead><tr>
+                <th>Episode</th>
+                <th>Name</th>
+                <th>URL</th>
+                <th>File</th>
+            </tr></thead>
+            {% for show in Show.query.order_by(Show.episode.desc()).all() %}
+                <tr>
+                    <td>{% if show.episode %}{{ show.episode }}{% endif %}</td>
+                    <td>{% if show.name %}{{ show.name }}{% endif %}</td>
+                    <td>{% if show.description %}{{ show.description }}{% else %}{{ show.url }}{% endif %}</td>
+                    <td>{% if show.file %}<a href=''><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></a>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
+                </tr>
             {% endfor %}
         </table>
     </div>

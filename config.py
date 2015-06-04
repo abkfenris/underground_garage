@@ -8,7 +8,7 @@ class Config(object):
                   'mqQAxNytzcix3m8matgPi2mBfF+dcVMCyFs@kMYtcw[pyVMzCU')
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SECURITY_POST_LOGIN_VIEW = 'admin/'
-    CELERY_BROKER_URL = ''
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 
 class DevelopmentConfig(Config):
