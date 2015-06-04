@@ -3,6 +3,8 @@ Utilities to get shows, and individual media files
 """
 import requests
 from bs4 import BeautifulSoup
+from collections import namedtuple
+import arrow
 
 
 URL_STUB = 'http://undergroundgarage.com'
@@ -62,7 +64,9 @@ def showlinks(archive_url):
         try:
             if next_span.name == 'a':
                 if 'Shows' in next_span.attrs['href'] or 'shows' in next_span.attrs['href']:
-                    links_to_shows.append(URL_STUB + next_span.attrs['href'])
+                    url = URL_STUB + next_span.attrs['href']
+                    if url not in links_to_shows:
+                        links_to_shows.append(url)
         except AttributeError:
             pass
     return links_to_shows
@@ -122,3 +126,18 @@ def showplaylist(show_url):
                         return playlistparts(part)
         except IndexError:
             pass
+
+
+def showinfo(show_url):
+    """
+    Returns a NamedTuple containing the info from show_url
+    """
+    showinfo = namedtuple('ShowInfo', 'number title date description')
+    r = requests.get(show_url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    number = int(soup.title.contents[0].split('-')[0].strip().split(' ')[1].strip(':'))
+    title = soup.title.contents[0].split('-')[1].strip()
+    dt =  arrow.get(soup.find_all('div', class_='pos-description')[0].div.contents[2],
+                    'dddd, D MMMM YYYY').datetime
+    desc = soup.find_all('div', class_='pos-description')[0].div.next_sibling.contents[1].get_text()
+    return showinfo(number=number, title=title, date=dt, description=desc)
