@@ -1,10 +1,12 @@
 """
 Utilities to get shows, and individual media files
 """
-import requests
-from bs4 import BeautifulSoup
 from collections import namedtuple
+
 import arrow
+from bs4 import BeautifulSoup
+from pydub import AudioSegment
+import requests
 
 
 URL_STUB = 'http://undergroundgarage.com'
@@ -141,3 +143,35 @@ def showinfo(show_url):
                     'dddd, D MMMM YYYY').datetime
     desc = soup.find_all('div', class_='pos-description')[0].div.next_sibling.contents[1].get_text()
     return showinfo(number=number, title=title, date=dt, description=desc)
+
+
+def combinelist(playlist, filename='list.mp3'):
+    """
+    Combines a list of mp3 urls into a single file
+    """
+    sound = AudioSegment.silent(duration=0)
+    for url in playlist:
+        r = requests.get(url, stream=True)
+        if r.status_code == 200:
+            r.raw.decode_content = True
+            sound = sound + AudioSegment.from_mp3(r.raw)
+    sound.export(filename, format='mp3')
+
+
+def updateshows():
+    from flask import current_app
+    from underground_garage.app import db
+    from underground_garage.models import Show
+    with current_app.app_context():
+        print('Updating shows')
+        showlist = showsinarchive()
+        print('Found {num} shows'.format(num=len(showlist)))
+        for show in showlist:
+            s = Show.query.filter_by(url=show).first()
+            if s is None:
+                s = Show(url=show)
+                db.session.add(s)
+        print('Adding shows:')
+        for obj in db.session:
+            print obj
+        db.session.commit()

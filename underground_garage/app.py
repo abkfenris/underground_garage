@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 '''The app module, containing the app factory function.'''
-from flask import Flask, render_template
+# from celery import Celery
+from flask import Flask  # , render_template
+from flask_bootstrap import Bootstrap
+# from flask_security import Security
+from flask_sqlalchemy import SQLAlchemy
 
-from config import config
+from config import config, Config
+
+bootstrap = Bootstrap()
+db = SQLAlchemy()
+# celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
 
 
 def create_app(config_name):
@@ -12,4 +20,14 @@ def create_app(config_name):
     '''
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+
+    bootstrap.init_app(app)
+    db.init_app(app)
+    # celery.conf.update(app.config)
+
+    from underground_garage.main import main
+    app.register_blueprint(main)
+
     return app
+
+import underground_garage.models

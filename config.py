@@ -8,11 +8,13 @@ class Config(object):
                   'mqQAxNytzcix3m8matgPi2mBfF+dcVMCyFs@kMYtcw[pyVMzCU')
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SECURITY_POST_LOGIN_VIEW = 'admin/'
+    CELERY_BROKER_URL = ''
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = ''
+    SQLALCHEMY_DATABASE_URI = (os.environ.get('UNDERGROUND_DB') or
+                               'postgresql://localhost/underground_garage')
 
 
 class TestingConfig(Config):

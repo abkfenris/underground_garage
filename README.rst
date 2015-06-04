@@ -14,3 +14,10 @@ Flask app to turn the Underground Garage Archive into a podcast
    :alt: Code Health
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
    :target: https://github.com/abkfenris/underground_garage
+
+underground_garage is a web app that takes the archived Little Steven's
+Underground Garage, creates a single file per show, and makes them avalaible as
+a podcast.
+
+The homepage gives a listing of shows, if the file has been created or not, and
+lets you download the file if it is, or ask the app to create the file.

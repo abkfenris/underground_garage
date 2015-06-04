@@ -1,31 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-import sys
-import subprocess
 from flask_script import Manager, Shell, Server
-from flask_migrate import MigrateCommand
+from flask_migrate import MigrateCommand, Migrate
 
-from underground_garage.app import create_app
-from underground_garage.user.models import User
-from underground_garage.settings import DevConfig, ProdConfig
-from underground_garage.database import db
+from underground_garage.app import create_app, db
 
-if os.environ.get("UNDERGROUND_GARAGE_ENV") == 'prod':
-    app = create_app(ProdConfig)
-else:
-    app = create_app(DevConfig)
+app = create_app(os.getenv('UNDERGROUND_CONFIG') or 'default')
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 TEST_PATH = os.path.join(HERE, 'tests')
 
 manager = Manager(app)
+migrate = Migrate(app, db)
+
 
 def _make_context():
     """Return context dict for a shell session so you can access
     app, db, and the User model by default.
     """
-    return {'app': app, 'db': db, 'User': User}
+    return {'app': app, }
+
 
 @manager.command
 def test():

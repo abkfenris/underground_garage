@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% set active_page = "index" %}
+
+{% block title %}Underground Garage Underground{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Garage.underground</h1>
+            <h2>It's Alive, It's Alive</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="{{ url_for('main.update') }}">Update</a>
+        <table class='table table-striped table-hover'>
+            <thead><tr><th>Episode</th><th>URL</th></tr></thead>
+            {% for show in Show.query.all() %}
+                <tr><td>{% if show.episode %}{{ show.episode }}{% endif %}</td><td>{{ show.url }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
