@@ -26,7 +26,7 @@
                     <td>{% if show.episode %}{{ show.episode }}{% endif %}</td>
                     <td>{% if show.name %}{{ show.name }}{% endif %}</td>
                     <td>{% if show.description %}{{ show.description }}{% else %}{{ show.url }}{% endif %}</td>
-                    <td>{% if show.file %}<a href=''><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></a>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
+                    <td>{% if show.episode %}<a href='{{ url_for('main.mp3', episode=show.episode) }}'>{% endif %}{% if show.file %}<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}{% if show.episode %}</a>{% endif %}</td>
                 </tr>
             {% endfor %}
         </table>

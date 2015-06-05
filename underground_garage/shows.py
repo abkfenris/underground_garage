@@ -158,17 +158,37 @@ def showinfo(show_url):
 
 
 @celery.task
-def combinelist(playlist, filename='list.mp3'):
+def combinelist(playlist, id=None, filename='list.mp3'):
     """
     Combines a list of mp3 urls into a single file
     """
     sound = AudioSegment.silent(duration=0)
-    for url in playlist:
+    print('Retrieving playlist {playlist} for file {filename}'.format(
+                playlist=playlist,
+                filename=filename))
+    total = len(playlist)
+    for counter, url in enumerate(playlist):
+        print('Retriveing part {counter} of {total}'.format(
+                    counter=counter + 1,
+                    total=total))
         r = requests.get(url, stream=True)
-        if r.status_code == 200:
-            r.raw.decode_content = True
-            sound = sound + AudioSegment.from_mp3(r.raw)
+        if r.status_code != 200:
+            while True:
+                print r.status_code
+                time.sleep(10)
+                r = requests.get(url, stream=True)
+                if r.status_code == 200:
+                    break
+        r.raw.decode_content = True
+        sound = sound + AudioSegment.from_mp3(r.raw)
     sound.export(filename, format='mp3')
+    print('Completed file: {filename}'.format(filename=filename))
+    if id is not None:
+        s = Show.query.filter_by(id=id).first()
+        print s
+        s.file = filename
+        db.session.add(s)
+        db.session.commit()
 
 
 @celery.task
