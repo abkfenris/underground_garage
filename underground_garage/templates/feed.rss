@@ -1,10 +1,18 @@
-<rss>
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:itunesu="http://www.itunesu.com/feed" version="2.0">
     <channel>
+        <title>Little Steven's Underground Garage</title>
+        <link>http://undergroundgarage.com</link>
         {% for show in Show.query.order_by(Show.episode.desc()).all() %}
         <item>
             <title>{{ show.episode }} - {{ show.name }}</title>
             <link>{{ show.url }}</link>
-            <descirption>{{ show.description }}</description>
+            <description>{{ show.description }}</description>
+            {% if show.episode %}
+                <guid>{{ url_for('main.mp3', episode=show.episode, _external=True) }}</guid>
+                <enclosure url="{{ url_for('main.mp3', episode=show.episode, _external=True) }}" type="audio/mpeg" />
+            {% endif %}
+        </item>
         {% endfor %}
     </channel>
 </rss>

@@ -10,10 +10,13 @@ Flask app to turn the Underground Garage Archive into a podcast
 .. image:: https://img.shields.io/github/issues/abkfenris/underground_garage.svg
     :target: https://github.com/abkfenris/underground_garage/issues
 .. image:: https://landscape.io/github/abkfenris/underground_garage/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/abkfenris/underground_garage/master
-   :alt: Code Health
+    :target: https://landscape.io/github/abkfenris/underground_garage/master
+    :alt: Code Health
+.. image:: https://requires.io/github/abkfenris/underground_garage/requirements.svg?branch=master
+    :target: https://requires.io/github/abkfenris/underground_garage/requirements/?branch=master
+    :alt: Requirements Status
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
-   :target: https://github.com/abkfenris/underground_garage
+    :target: https://github.com/abkfenris/underground_garage
 
 underground_garage is a web app that takes the archived Little Steven's
 Underground Garage, creates a single file per show, and makes them avalaible as

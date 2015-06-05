@@ -18,6 +18,7 @@ def index():
 
     Index page with list of shows
     """
+    shows.updateshows.delay()
     return render_template('index.html', Show=Show)
 
 
@@ -27,6 +28,7 @@ def feed():
 
     Podcast feed
     """
+    shows.updateshows.delay()
     return render_template('feed.rss', Show=Show)
 
 
