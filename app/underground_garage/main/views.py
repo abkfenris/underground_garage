@@ -2,15 +2,18 @@
 The main public routes to view the site
 """
 import os
+import logging
 
-from flask import render_template, redirect, url_for, abort, send_from_directory
+from flask import render_template, redirect, url_for, abort, send_from_directory, current_app
 
 from underground_garage import shows
+from underground_garage.app import storage
 from underground_garage.models import Show
 from config import basedir
 
 from . import main
 
+logger = logging.getLogger(__name__)
 
 @main.route('/')
 def index():
@@ -58,12 +61,13 @@ def mp3(episode):
     If file is avaliable, then serve it, otherwise get file and then serve it
     """
     s = Show.query.filter_by(episode=episode).first_or_404()
-    if s.file is None:
+    filename = '{episode}.mp3'.format(episode=s.episode)
+    mp3 = storage.get(filename)
+    try:
+        download_url = mp3.download_url()
+        return redirect(download_url)
+    except AttributeError:
         pl = shows.showplaylist(s.url)
-        filename = 'underground_garage/static/shows/{episode}.mp3'.format(episode=s.episode)
+
         shows.combinelist.delay(pl, id=s.id, filename=filename)
         abort(404)
-    else:
-        path, file = os.path.split(s.file)
-        path = os.path.join(basedir, path)
-        return send_from_directory(path, file)

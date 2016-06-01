@@ -39,8 +39,11 @@ Flask-DebugToolbar==0.9.2
 
 # Archive Parsing
 requests
-BeautifulSoup
+beautifulsoup4
 arrow
+
+# Storage
+flask-cloudy
 
 # Audio
 pydub

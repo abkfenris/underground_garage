@@ -1,0 +1,50 @@
+version: '2'
+
+services:
+  redis:
+    restart: "always"
+    image: redis:alpine
+    env_file:
+      - ./common.env
+    volumes:
+      - ./data/redis:/data
+
+  postgres:
+    restart: "always"
+    image: postgres:9.5
+    env_file:
+      - ./common.env
+
+  web:
+    restart: "always"
+    build: ./app
+    expose:
+      - "8000"
+    links:
+      - redis:redis
+      - postgres:postgres
+    command: "gunicorn --log-level debug -w 2 -b :8000 wsgi:app"
+    volumes:
+      - ./data/google_key:/google_key
+    env_file:
+      - ./common.env
+
+  celery:
+    restart: "always"
+    build: ./app
+    links:
+      - redis:redis
+      - postgres:postgres
+    command: "celery worker -A celery_worker.celery -l info"
+    volumes:
+      - ./data/google_key:/google_key
+    env_file:
+      - ./common.env
+
+  nginx:
+    restart: "always"
+    build: ./nginx/
+    ports:
+      - "80:80"
+    links:
+      - web:web

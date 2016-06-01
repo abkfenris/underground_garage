@@ -4,7 +4,7 @@ import os
 from flask_script import Manager, Shell, Server
 from flask_migrate import MigrateCommand, Migrate
 
-from underground_garage.app import create_app, db
+from underground_garage.app import create_app, db, storage
 from underground_garage import shows
 
 app = create_app(os.getenv('UNDERGROUND_CONFIG') or 'default')
@@ -20,7 +20,7 @@ def _make_context():
     """Return context dict for a shell session so you can access
     app, db, and the User model by default.
     """
-    return {'app': app, 'db': db, 'shows': shows}
+    return {'app': app, 'db': db, 'shows': shows, 'storage': storage}
 
 
 @manager.command

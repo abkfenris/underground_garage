@@ -3,6 +3,7 @@ Utilities to get shows, and individual media files
 """
 from collections import namedtuple
 import time
+import os
 
 import arrow
 from bs4 import BeautifulSoup
@@ -10,8 +11,7 @@ from flask import current_app
 from pydub import AudioSegment
 import requests
 
-from underground_garage.app import celery
-from underground_garage.app import db
+from underground_garage.app import celery, db, storage
 from underground_garage.models import Show
 
 
@@ -28,25 +28,10 @@ def archivepages():
     index_soup = BeautifulSoup(index_r.text, 'html.parser')
     for span in index_soup.findAll('span'):
         try:
-            if 'Archived Shows' in span.contents[0]:
-                archive_span = span
-                break
+            if 'Shows ' in span.contents[0]:
+                url = URL_STUB + span.parent.parent.attrs['href']
+                show_list.append(url)
         except IndexError:
-            pass
-    next_span = archive_span
-    while True:
-        try:
-            next_span = next_span.next
-        except AttributeError:
-            break
-        try:
-            if next_span.name == 'a':
-                if 'shows-' in next_span.attrs['href'] or 'Shows-' in next_span.attrs['href']:
-                    if '.html' not in next_span.attrs['href']:
-                        show_list.append(URL_STUB + next_span.attrs['href'])
-        except AttributeError:
-            pass
-        except KeyError:
             pass
     return show_list
 
@@ -152,7 +137,7 @@ def showinfo(show_url):
     number = int(soup.title.contents[0].split('-')[0].strip().split(' ')[1].strip(':'))
     title = soup.title.contents[0].split('-')[1].strip()
     dt =  arrow.get(soup.find_all('div', class_='pos-description')[0].div.contents[2],
-                    'dddd, D MMMM YYYY').datetime
+                    'D MMMM YYYY').datetime
     desc = soup.find_all('div', class_='pos-description')[0].div.next_sibling.contents[1].get_text()
     return showinfo(number=number, title=title, date=dt, description=desc)
 
@@ -181,17 +166,23 @@ def combinelist(playlist, id=None, filename='list.mp3'):
                     break
         r.raw.decode_content = True
         sound = sound + AudioSegment.from_mp3(r.raw)
+    print('Exporting {filename}'.format(filename=filename))
     sound.export(filename, format='mp3')
+    print('Uploading {filename}'.format(filename=filename))
+    upload = storage.upload(filename, public=True)
+    print('Uploaded {filename}. Removing local.'.format(filename=filename))
+    print(upload, dir(upload))
+    os.remove(filename)
     print('Completed file: {filename}'.format(filename=filename))
     if id is not None:
         s = Show.query.filter_by(id=id).first()
         print s
-        s.file = filename
+        s.file = upload.url
         db.session.add(s)
         db.session.commit()
 
 
-@celery.task
+@celery.task(rate_limit='1/h')
 def updateshows():
     """
     Get the current list of shows in the archive,

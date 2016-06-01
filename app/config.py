@@ -8,7 +8,12 @@ class Config(object):
                   'mqQAxNytzcix3m8matgPi2mBfF+dcVMCyFs@kMYtcw[pyVMzCU')
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SECURITY_POST_LOGIN_VIEW = 'admin/'
-    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL',
+                                       'redis://localhost:6379/0')
+    STORAGE_PROVIDER = os.environ.get('STORAGE_PROVIDER')
+    STORAGE_KEY = os.environ.get('STORAGE_KEY')
+    STORAGE_SECRET = os.environ.get('STORAGE_SECRET')
+    STORAGE_CONTAINER = os.environ.get('STORAGE_CONTAINER')
 
 
 class DevelopmentConfig(Config):
@@ -32,5 +37,5 @@ config = {
     'testing': TestingConfig,
     'production': ProductionConfig,
 
-    'default': DevelopmentConfig
+    'default': ProductionConfig
 }
