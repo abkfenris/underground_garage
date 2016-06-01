@@ -26,6 +26,7 @@ class Show(db.Model):
     description = db.Column(db.Text)
     url = db.Column(db.String(320))
     file = db.Column(db.String(320))
+    size = db.Column(db.Integer)
 
     def __repr__(self):
         if self.episode and self.name:

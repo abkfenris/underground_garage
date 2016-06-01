@@ -1,18 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:itunesu="http://www.itunesu.com/feed" version="2.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
     <channel>
         <title>Little Steven's Underground Garage</title>
+        <description>A podcast automatically assembled from Little Steven's Underground Garage</description>
         <link>http://undergroundgarage.com</link>
-        {% for show in Show.query.order_by(Show.episode.desc()).all() %}
+        <language>en-us</language>
+        <copyright>None</copyright>
+        <lastBuildDate>{{ last_show_date.strftime('%a, %d %b %Y %H:%M:%S %z') }}</lastBuildDate>
+        <pubDate>{{ last_show_date.strftime('%a, %d %b %Y %H:%M:%S %z') }}</pubDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <webMaster>abk@mac.com</webMaster>
+
+        {% for show in Show.query.order_by(Show.episode.desc()).filter(Show.episode != None).all() %}
         <item>
+
             <title>{{ show.episode }} - {{ show.name }}</title>
             <link>{{ show.url }}</link>
             <description>{{ show.description }}</description>
             {% if show.episode %}
                 <guid>{{ url_for('main.mp3', episode=show.episode, _external=True) }}</guid>
-                <enclosure url="{{ url_for('main.mp3', episode=show.episode, _external=True) }}" type="audio/mpeg" />
+                <enclosure
+                  url="{{ url_for('main.mp3', episode=show.episode, _external=True) }}"
+                  type="audio/mpeg"
+                  length="{{show.size}}"
+                  />
             {% endif %}
+            <category>Podcasts</category>
+            <pubDate>{{ show.dt.strftime('%a, %d %b %Y %H:%M:%S %z') }}</pubDate>
+
         </item>
         {% endfor %}
+
     </channel>
 </rss>

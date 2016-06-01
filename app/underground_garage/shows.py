@@ -172,11 +172,13 @@ def combinelist(playlist, id=None, filename='list.mp3'):
     upload = storage.upload(filename, public=True)
     print('Uploaded {filename}. Removing local.'.format(filename=filename))
     print(upload, dir(upload))
+    size = os.stat(filename).st_size
     os.remove(filename)
     print('Completed file: {filename}'.format(filename=filename))
     if id is not None:
         s = Show.query.filter_by(id=id).first()
         print s
+        s.size = size
         s.file = upload.url
         db.session.add(s)
         db.session.commit()

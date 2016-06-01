@@ -31,8 +31,12 @@ def feed():
 
     Podcast feed
     """
-    shows.updateshows.delay()
-    return render_template('feed.rss', Show=Show)
+    #shows.updateshows.delay()
+    return render_template('feed.rss',
+                           Show=Show,
+                           last_show_date=Show.query.order_by(
+                                Show.episode.desc()).filter(
+                                    Show.episode != None).first().dt)
 
 
 @main.route('/about/')

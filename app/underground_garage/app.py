@@ -14,6 +14,17 @@ db = SQLAlchemy()
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
 storage = Storage()
 
+TaskBase = celery.Task
+
+
+class ContextTask(TaskBase):
+    abstract = True
+
+    def after_return(self, status, retval, task_id, args, kwargs, einfo):
+        db.session.remove()
+
+celery.Task = ContextTask
+
 
 def create_app(config_name):
     '''An application factory, as explained here:
