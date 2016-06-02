@@ -58,3 +58,6 @@ target/
 *.mp3
 data
 common.env
+common.yaml
+config.yaml
+secret.yaml

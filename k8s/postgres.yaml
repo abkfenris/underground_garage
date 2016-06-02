@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: underground-postgres
+  labels:
+    app: underground
+    service: postgres
+    tier: backend
+    name: underground-postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: underground
+        service: postgres
+        tier: backend
+        name: underground-postgres
+    spec:
+      containers:
+        - image: postgres:9.5
+          name: underground-postgres
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: postgres-password
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: underground-postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data/
+      volumes:
+        - name: underground-postgres-persistent-storage
+          gcePersistentDisk:
+            pdName: underground-postgres-disk
+            fsType: ext4

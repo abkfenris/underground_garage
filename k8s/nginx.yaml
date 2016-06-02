@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: underground-nginx
+  labels:
+    app: underground
+    service: web
+    tier: frontend
+    name: underground-nginx
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: underground
+        service: web
+        tier: frontend
+        name: underground-nginx
+    spec:
+      containers:
+        - image: gcr.io/alex-kerney/underground-nginx:0.2
+          name: nginx
+          ports:
+            - containerPort: 80
+              name: http

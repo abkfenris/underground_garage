@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: underground-nginx
+  labels:
+    app: underground
+    service: web
+    tier: frontend
+    name: underground-nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: underground
+    service: web
+    tier: frontend
+    name: underground-nginx
+  type: LoadBalancer

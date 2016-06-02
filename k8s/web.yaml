@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: underground-web
+  labels:
+    app: underground
+    service: web
+    tier: frontend
+    name: underground-web
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: underground
+        service: web
+        tier: frontend
+        name: underground-web
+    spec:
+      containers:
+        - image: gcr.io/alex-kerney/underground:0.1
+          name: web
+          command: ["gunicorn", "--log-level", "debug", "-w", "2", "-b", ":8000", "wsgi:app"]
+          env:
+
+            - name: UNDERGROUND_CONFIG
+              value: production
+            - name: UNDERGROUND_DB
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: underground-db
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: underground-config
+                  key: celery-broker-url
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: sentry-dsn
+            - name: STORAGE_PROVIDER
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-provider
+            - name: STORAGE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-key
+            - name: STORAGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-secret
+            - name: STORAGE_CONTAINER
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-container
+          ports:
+          - containerPort: 8000
+            name: gunicorn

@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: underground-celery
+  labels:
+    app: underground
+    service: celery
+    tier: backend
+    name: underground-celery
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: underground
+        service: celery
+        tier: backend
+        name: underground-celery
+    spec:
+      containers:
+        - image: gcr.io/alex-kerney/underground:0.1
+          name: celery
+          command: ["celery", "worker", "-A", "celery_worker.celery", "-l", "info"]
+          env:
+            - name: C_FORCE_ROOT
+              value: 'True'
+            - name: UNDERGROUND_CONFIG
+              value: production
+            - name: UNDERGROUND_DB
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: underground-db
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: underground-config
+                  key: celery-broker-url
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: sentry-dsn
+            - name: STORAGE_PROVIDER
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-provider
+            - name: STORAGE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-key
+            - name: STORAGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-secret
+            - name: STORAGE_CONTAINER
+              valueFrom:
+                secretKeyRef:
+                  name: underground-secrets
+                  key: storage-container
