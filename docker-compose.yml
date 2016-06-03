@@ -48,3 +48,12 @@ services:
       - "80:80"
     links:
       - web:web
+
+  flower:
+    image: placr/flower
+    env_file:
+      - ./common.env
+    links:
+      - redis:redis
+    ports:
+      - "5555:5555"

@@ -8,7 +8,7 @@ metadata:
     tier: frontend
     name: underground-web
 spec:
-  replicas: 3
+  replicas: 2
   template:
     metadata:
       labels:
@@ -18,7 +18,7 @@ spec:
         name: underground-web
     spec:
       containers:
-        - image: gcr.io/alex-kerney/underground:0.2
+        - image: gcr.io/alex-kerney/underground:0.3
           name: web
           command: ["gunicorn", "--log-level", "debug", "-w", "2", "-b", ":8000", "wsgi:app"]
           env:

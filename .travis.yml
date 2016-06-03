@@ -6,6 +6,6 @@ services:
 cache: pip
 install:
     - pip install -r requirements/dev.txt
-script: nosetests -v --cover-package=underground_garage --with-xcoverage
+script: cd app && nosetests -v --cover-package=underground_garage --with-xcoverage
 after_success:
     - coveralls
