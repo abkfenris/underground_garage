@@ -68,7 +68,7 @@ def mp3(episode):
     filename = '{episode}.mp3'.format(episode=s.episode)
     mp3 = storage.get(filename)
     try:
-        download_url = mp3.download_url()
+        download_url = mp3.download_url(timeout=18000)
         return redirect(download_url)
     except AttributeError:
         pl = shows.showplaylist(s.url)

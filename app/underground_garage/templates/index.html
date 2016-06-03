@@ -5,30 +5,105 @@
 {% block title %}Underground Garage Underground{% endblock %}
 
 {% block content %}
-    <div class="jumbotron">
+    <div class="jumbotron" style="background-color: #337ab7; color: white">
         <div class="container">
-            <h1>Garage.underground</h1>
-            <h2>It's Alive, It's Alive</h2>
+            <h1 class="text-center">underground.AlexKerney.com</h1>
+            <h2 class="text-center">It's Alive, It's Alive <a class="btn btn-default" href="{{ url_for('main.feed')}}"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> Podcast Feed</a></h2>
         </div>
     </div>
 
     <div class="container">
-        <a href="{{ url_for('main.update') }}">Update</a>
-        <table class='table table-striped table-hover'>
-            <thead><tr>
-                <th>Episode</th>
-                <th>Name</th>
-                <th>URL</th>
-                <th>File</th>
-            </tr></thead>
-            {% for show in Show.query.order_by(Show.episode.desc()).all() %}
-                <tr>
-                    <td>{% if show.episode %}{{ show.episode }}{% endif %}</td>
-                    <td>{% if show.name %}{{ show.name }}{% endif %}</td>
-                    <td>{% if show.description %}{{ show.description }}{% else %}{{ show.url }}{% endif %}</td>
-                    <td>{% if show.episode %}<a href='{{ url_for('main.mp3', episode=show.episode) }}'>{% endif %}{% if show.file %}<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}{% if show.episode %}</a>{% endif %}</td>
-                </tr>
-            {% endfor %}
-        </table>
+
+        <div class="row">
+            <p class="text-center">
+              This site provides a podcast of <a href="http://undergroundgarage.com">Little Steven's Underground Garage Radio Show</a>.
+            </p>
+            <p class="text-center">
+              Some of us just prefer to listen on the go, but not always towards midnight when it's usually syndicated.
+            </p>
+
+        </div>
+
+        <div class="row">
+          <div class="col-md-2">
+
+          </div>
+
+
+          <div class="col-md-8">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                Plus it is an <a style="color: white; text-decoration: underline" href="https://github.com/abkfenris/underground_garage">experiment</a> with a few technologies.
+              </div>
+
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <a href="https://beautiful-soup-4.readthedocs.io/en/latest/">BeautifulSoup</a> to scrape the radioshow page and extract the mp3s from JavaScript and Flash.
+                </li>
+                <li class="list-group-item">
+                  <a href="http://www.celeryproject.org">Celery</a> task queues to manage the scraping and converting mp3 playlists to a single file.
+                </li>
+                <li class="list-group-item">
+                  <a href="http://pydub.com">Pydub</a> to combine the mp3s into a single file.
+                </li>
+                <li class="list-group-item">
+                  <a href="https://github.com/mardix/flask-cloudy">Flask-Cloudy</a> and <a href="http://aws.amazon.com/s3/">Amazon S3</a> to store and host the combined show files.
+                </li>
+                <li class="list-group-item">
+                  <p>
+                    <a href="http://kubernetes.io">Kubernetes</a> and <a href="https://cloud.google.com/container-engine/">Google Container Engine</a> to manage the <a href="https://www.docker.com">Docker Containers</a> that make up the infrastructure.
+                  </p>
+                  <p>
+                    A nice feature of Kubernetes and Google Container Engine is the ability to autoscale.
+                    It takes a few minutes for the Celery containers to process the task of combining the parts of a show into a single file.
+                    In the process they use a large amount of RAM, max out a CPU, and spend some time uploading and downloading.
+                  </p>
+                  <p>
+                    As Kubernetes detects the <a href="https://github.com/abkfenris/underground_garage/blob/master/k8s/celery-scale.yaml">Celery containers are busy</a> it can scale out to more containers, and Container Engine can <a href="https://cloud.google.com/compute/docs/autoscaler/">scale out onto additional hosts</a>.
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+        <div>
+          <p class="text-center">
+            Files that are current avaliable have a headphone icon. <span class="glyphicon glyphicon-headphones" aria-hidden="true"></span>
+          </p>
+          <p class="text-center">
+            Files that haven't been downloaded yet have an X instead. Click to trigger processing. <span class="glyphicon glyphicon-remove"></span>
+          </p>
+          <p class="text-center">
+            Don't worry about your podcast player, most will trigger the server to start processing the file.
+          </p>
+          <p class="text-center">
+            The file will most likely be avaliable by the next time it retries to download it.
+          </p>
+        </div>
+
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Shows
+          </div>
+
+          <table class='table table-striped table-hover'>
+              <thead><tr>
+                  <th>Episode</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>File</th>
+              </tr></thead>
+              {% for show in Show.query.order_by(Show.episode.desc()).all() %}
+                  <tr>
+                      <td>{% if show.episode %}{{ show.episode }}{% endif %}</td>
+                      <td>{% if show.name %}<a href='{{ show.url }}'>{{ show.name }}</a>{% endif %}</td>
+                      <td>{% if show.description %}{{ show.description }}{% else %}{{ show.url }}{% endif %}</td>
+                      <td>{% if show.episode %}<a href='{{ url_for('main.mp3', episode=show.episode) }}'>{% endif %}{% if show.file %}<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}{% if show.episode %}</a>{% endif %}</td>
+                  </tr>
+              {% endfor %}
+          </table>
+        </div>
     </div>
 {% endblock %}

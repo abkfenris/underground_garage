@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% set active_page = "404" %}
+
+{% block title %}Underground Garage Underground{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1><a href="{{ url_for('main.index')}}">underground.AlexKerney.com</a></h1>
+            <h2>404</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        Taking a guess that you are looking the audio from a show and you got here by clicking an X. <span class="glyphicon glyphicon-remove"></span>
+        <br  />
+        You're not necessarily in the wrong spot, you're just here early.
+        <br  />
+        You've triggered the creation of the show file, but it will take long enough it felt impolite to keep you waiting.
+        <br  />
+        Reload the <a href="{{ url_for('main.index')}}">index page</a> in a few minutes and hopefully a headphone symbol <span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> will be gracing your show, which means it's ready to download.
+    </div>
+{% endblock %}

@@ -11,7 +11,10 @@
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <webMaster>abk@mac.com</webMaster>
 
-        {% for show in Show.query.order_by(Show.episode.desc()).filter(Show.episode != None).all() %}
+        {% for show in Show.query.order_by(
+          Show.episode.desc()).filter(
+            Show.episode != None, 
+            Show.dt != None).all() %}
         <item>
 
             <title>{{ show.episode }} - {{ show.name }}</title>
