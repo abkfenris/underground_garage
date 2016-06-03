@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: underground-celery
+spec:
+  scaleRef:
+    kind: Deployment
+    name: underground-celery
+    subresource: scale
+  minReplicas: 1
+  maxReplicas: 10
+  cpuUtilization:
+    targetPercentage: 50

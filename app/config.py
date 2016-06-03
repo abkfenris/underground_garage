@@ -14,6 +14,7 @@ class Config(object):
     STORAGE_KEY = os.environ.get('STORAGE_KEY')
     STORAGE_SECRET = os.environ.get('STORAGE_SECRET')
     STORAGE_CONTAINER = os.environ.get('STORAGE_CONTAINER')
+    CELERYD_PREFETCH_MULTIPLIER = os.environ.get('CELERYD_PREFETCH_MULTIPLIER', 4)
 
 
 class DevelopmentConfig(Config):

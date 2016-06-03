@@ -18,7 +18,7 @@ spec:
         name: underground-web
     spec:
       containers:
-        - image: gcr.io/alex-kerney/underground:0.1
+        - image: gcr.io/alex-kerney/underground:0.2
           name: web
           command: ["gunicorn", "--log-level", "debug", "-w", "2", "-b", ":8000", "wsgi:app"]
           env:
