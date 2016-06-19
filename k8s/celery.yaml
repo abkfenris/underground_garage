@@ -18,7 +18,7 @@ spec:
         name: underground-celery
     spec:
       containers:
-        - image: gcr.io/alex-kerney/underground:0.1
+        - image: gcr.io/alex-kerney/underground:0.4
           name: celery
           command: ["celery", "worker", "-A", "celery_worker.celery", "-l", "info"]
           env:

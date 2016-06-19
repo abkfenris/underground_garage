@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: underground-celery-flower
+  labels:
+    app: underground
+    service: celery-flower
+    tier: backend
+    name: underground-celery-flower
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: underground
+        service: celery-flower
+        tier: backend
+        name: underground-celery-flower
+    spec:
+      containers:
+        - image: placr/flower
+          name: celery-flower
+          ports:
+            - containerPort: 5555
+              name: celery-flower
+          env:
+            - name: REDIS_HOST
+              value: 'underground-redis'
