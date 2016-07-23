@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from flask import current_app
 from pydub import AudioSegment
 import requests
+import redis
 
 from underground_garage.app import celery, db, storage
 from underground_garage.models import Show
@@ -147,12 +148,31 @@ def combinelist(playlist, id=None, filename='list.mp3'):
     """
     Combines a list of mp3 urls into a single file
     """
+    show_redis = redis.StrictRedis(
+            host=current_app.config.get('SHOWS_REDIS_HOST'),
+            port=current_app.config.get('SHOWS_REDIS_PORT'),
+            db=current_app.config.get('SHOWS_REDIS_DB')
+            )
+
+    # Check if another instance has started processing
+    redis_key = 'show:{filename}'.format(filename=filename)
+    if show_redis.exist(redis_key):
+        current_app.logger.warning(
+            'Canceled playlist creation for show {id}'.format(id=id))
+        return
+
+    # Set claim on processing
+    show_redis.set(redis_key, True)
+    show_redis.expire(redis_key, 600)
+
     sound = AudioSegment.silent(duration=0)
     print('Retrieving playlist {playlist} for file {filename}'.format(
                 playlist=playlist,
                 filename=filename))
+
     total = len(playlist)
     for counter, url in enumerate(playlist):
+        show_redis.expire(redis_key, 600)
         print('Retriveing part {counter} of {total}'.format(
                     counter=counter + 1,
                     total=total))
@@ -166,9 +186,12 @@ def combinelist(playlist, id=None, filename='list.mp3'):
                     break
         r.raw.decode_content = True
         sound = sound + AudioSegment.from_mp3(r.raw)
+
     print('Exporting {filename}'.format(filename=filename))
+    show_redis.expire(redis_key, 600)
     sound.export(filename, format='mp3')
     print('Uploading {filename}'.format(filename=filename))
+    show_redis.expire(redis_key, 600)
     upload = storage.upload(filename, public=True)
     print('Uploaded {filename}. Removing local.'.format(filename=filename))
     print(upload, dir(upload))

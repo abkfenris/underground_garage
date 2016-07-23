@@ -20,5 +20,10 @@ spec:
       containers:
       - name: master
         image: redis
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            cpu: 400m
         ports:
         - containerPort: 6379

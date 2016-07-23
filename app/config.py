@@ -14,7 +14,16 @@ class Config(object):
     STORAGE_KEY = os.environ.get('STORAGE_KEY')
     STORAGE_SECRET = os.environ.get('STORAGE_SECRET')
     STORAGE_CONTAINER = os.environ.get('STORAGE_CONTAINER')
-    CELERYD_PREFETCH_MULTIPLIER = os.environ.get('CELERYD_PREFETCH_MULTIPLIER', 4)
+
+    CELERYD_PREFETCH_MULTIPLIER = os.environ.get('CELERYD_PREFETCH_MULTIPLIER', 1)
+
+    SHOWS_REDIS_HOST = os.environ.get('SHOWS_REDIS_HOST', 'localhost')
+    SHOWS_REDIS_PORT = int(os.environ.get('SHOWS_REDIS_PORT', 6379))
+    SHOWS_REDIS_DB = int(os.environ.get('SHOWS_REDIS_DB', 1))
+
+    REQUESTS_NICE_REDIS_HOST = os.environ.get('SHOWS_REDIS_HOST', 'localhost')
+    REQUESTS_NICE_REDIS_PORT = int(os.environ.get('REQUESTS_NICE_REDIS_PORT', 6379))
+    REQUESTS_NICE_REDIS_DB = int(os.environ.get('SHOWS_REDIS_DB', 2))
 
 
 class DevelopmentConfig(Config):

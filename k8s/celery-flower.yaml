@@ -20,6 +20,11 @@ spec:
       containers:
         - image: placr/flower
           name: celery-flower
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              cpu: 100m
           ports:
             - containerPort: 5555
               name: celery-flower

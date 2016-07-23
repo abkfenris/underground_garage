@@ -20,6 +20,11 @@ spec:
       containers:
         - image: gcr.io/alex-kerney/underground-nginx:0.2
           name: nginx
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              cpu: 400m
           ports:
             - containerPort: 80
               name: http

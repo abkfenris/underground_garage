@@ -20,6 +20,11 @@ spec:
       containers:
         - image: gcr.io/alex-kerney/underground:0.4
           name: celery
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              cpu: 800m
           command: ["celery", "worker", "-A", "celery_worker.celery", "-l", "info"]
           env:
             - name: C_FORCE_ROOT
