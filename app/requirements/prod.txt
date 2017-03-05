@@ -43,8 +43,7 @@ beautifulsoup4
 arrow
 
 # Storage
-flask-cloudy==0.16.0
-pycrypto
+google-cloud-storage
 
 # Audio
 pydub

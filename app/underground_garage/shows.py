@@ -12,7 +12,7 @@ from pydub import AudioSegment
 import requests
 import redis
 
-from underground_garage.app import celery, db, storage
+from underground_garage.app import celery, db, storage_client_bucket
 from underground_garage.models import Show
 
 
@@ -156,7 +156,7 @@ def combinelist(playlist, id=None, filename='list.mp3'):
 
     # Check if another instance has started processing
     redis_key = 'show:{filename}'.format(filename=filename)
-    if show_redis.exist(redis_key):
+    if show_redis.exists(redis_key):
         current_app.logger.warning(
             'Canceled playlist creation for show {id}'.format(id=id))
         return
@@ -192,7 +192,13 @@ def combinelist(playlist, id=None, filename='list.mp3'):
     sound.export(filename, format='mp3')
     print('Uploading {filename}'.format(filename=filename))
     show_redis.expire(redis_key, 600)
-    upload = storage.upload(filename, public=True, overwrite=True)
+
+    client, bucket = storage_client_bucket(current_app)
+
+    upload = bucket.blob(filename)
+    upload.upload_from_filename(filename)
+
+
     print('Uploaded {filename}. Removing local.'.format(filename=filename))
     print(upload, dir(upload))
     size = os.stat(filename).st_size
@@ -202,7 +208,7 @@ def combinelist(playlist, id=None, filename='list.mp3'):
         s = Show.query.filter_by(id=id).first()
         print s
         s.size = size
-        s.file = upload.url
+        s.file = upload.self_link
         db.session.add(s)
         db.session.commit()
 

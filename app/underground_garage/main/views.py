@@ -3,11 +3,12 @@ The main public routes to view the site
 """
 import os
 import logging
+from datetime import timedelta
 
 from flask import render_template, redirect, url_for, abort, send_from_directory, current_app
 
 from underground_garage import shows
-from underground_garage.app import storage
+from underground_garage.app import storage_client_bucket
 from underground_garage.models import Show
 from config import basedir
 
@@ -66,9 +67,13 @@ def mp3(episode):
     """
     s = Show.query.filter_by(episode=episode).first_or_404()
     filename = '{episode}.mp3'.format(episode=s.episode)
-    mp3 = storage.get(filename)
+
+    client, bucket = storage_client_bucket(current_app)
+
+    mp3 = bucket.get_blob(filename)
+
     try:
-        download_url = mp3.download_url(timeout=18000)
+        download_url = mp3.generate_signed_url(timedelta(seconds=18000))
         return redirect(download_url)
     except AttributeError:
         pl = shows.showplaylist(s.url)

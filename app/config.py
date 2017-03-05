@@ -15,6 +15,9 @@ class Config(object):
     STORAGE_SECRET = os.environ.get('STORAGE_SECRET')
     STORAGE_CONTAINER = os.environ.get('STORAGE_CONTAINER')
 
+    GOOGLE_JSON_PATH = os.environ.get('GOOGLE_JSON_PATH')
+    GOOGLE_PROJECT = os.environ.get('GOOGLE_PROJECT')
+
     CELERYD_PREFETCH_MULTIPLIER = os.environ.get('CELERYD_PREFETCH_MULTIPLIER', 1)
 
     SHOWS_REDIS_HOST = os.environ.get('SHOWS_REDIS_HOST', 'localhost')
