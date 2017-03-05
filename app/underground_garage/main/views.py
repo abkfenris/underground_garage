@@ -76,10 +76,9 @@ def mp3(episode):
         download_url = mp3.generate_signed_url(timedelta(seconds=18000))
         return redirect(download_url)
     except AttributeError:
-        pl = shows.showplaylist(s.url)
         current_app.logger.warning('Unable to load episode {episode}'.format(episode=episode))
-        shows.combinelist.delay(pl, id=s.id, filename=filename)
-        current_app.logger.warning('{pl} - {id} - {filename}'.format(pl=', '.join(pl), id=s.id, filename=filename))
+        shows.combinelist.delay(show_id=s.id, filename=filename)
+        #current_app.logger.warning('{pl} - {id} - {filename}'.format(pl=', '.join(pl), id=s.id, filename=filename))
 
         abort(404)
         #return render_template('404.html'), 404
