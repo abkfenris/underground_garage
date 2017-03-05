@@ -192,7 +192,7 @@ def combinelist(playlist, id=None, filename='list.mp3'):
     sound.export(filename, format='mp3')
     print('Uploading {filename}'.format(filename=filename))
     show_redis.expire(redis_key, 600)
-    upload = storage.upload(filename, public=True)
+    upload = storage.upload(filename, public=True, overwrite=True)
     print('Uploaded {filename}. Removing local.'.format(filename=filename))
     print(upload, dir(upload))
     size = os.stat(filename).st_size

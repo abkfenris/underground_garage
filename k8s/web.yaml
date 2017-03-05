@@ -18,14 +18,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: gcr.io/alex-kerney/underground:0.5
-        name: web
-        resources:
-          requests:
-            cpu: 10m
-          limits:
-            cpu: 400m
-        command:
+      - command:
         - gunicorn
         - --log-level
         - debug
@@ -50,13 +43,13 @@ spec:
         - name: SHOWS_REDIS_HOST
           valueFrom:
             configMapKeyRef:
-              name: underground-config
               key: shows-redis-host
+              name: underground-config
         - name: SHOWS_REDIS_DB
           valueFrom:
             configMapKeyRef:
-              name: underground-config
               key: shows-redis-db
+              name: underground-config
         - name: SENTRY_DSN
           valueFrom:
             secretKeyRef:
@@ -82,6 +75,13 @@ spec:
             secretKeyRef:
               key: storage-container
               name: underground-secrets
+        image: gcr.io/alex-kerney/underground:0.6
+        name: web
         ports:
         - containerPort: 8000
           name: gunicorn
+        resources:
+          limits:
+            cpu: 400m
+          requests:
+            cpu: 10m

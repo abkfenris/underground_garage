@@ -30,6 +30,7 @@ services:
     command: "gunicorn --log-level debug -w 2 -b :8000 wsgi:app"
     volumes:
       - ./data/google_key:/google_key
+      - ./app:/usr/src/app
     env_file:
       - ./common.env
 
