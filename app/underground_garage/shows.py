@@ -7,6 +7,7 @@ import os
 
 import arrow
 from bs4 import BeautifulSoup
+from celery.task.schedules import crontab
 from flask import current_app
 from pydub import AudioSegment
 import requests
@@ -262,3 +263,10 @@ def showswithout():
     Return a list of urls for shows without an episode
     """
     return Show.query.filter_by(episode=None).all()
+
+celery.conf.beat_schedule = {
+    'update-1-hour': {
+        'task': 'underground_garage.shows.updateshows',
+        'schedule': crontab(hour='*/1')
+    }
+}

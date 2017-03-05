@@ -3,33 +3,35 @@ kind: Deployment
 metadata:
   labels:
     app: underground
-    name: underground-web
-    service: web
-    tier: frontend
-  name: underground-web
+    name: underground-celery
+    service: celery
+    tier: backend
+  name: underground-celery
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: underground
-        name: underground-web
-        service: web
-        tier: frontend
+        name: underground-celery
+        service: celery
+        tier: backend
     spec:
       containers:
       - command:
-        - gunicorn
-        - --log-level
-        - debug
-        - -w
-        - '2'
-        - -b
-        - :8000
-        - wsgi:app
+        - celery
+        - beat
+        - -A
+        - celery_worker.celery
+        - -l
+        - info
         env:
+        - name: C_FORCE_ROOT
+          value: 'True'
         - name: UNDERGROUND_CONFIG
           value: production
+        - name: SHOWS_REDIS_HOST
+          value: underground-redis
         - name: UNDERGROUND_DB
           valueFrom:
             secretKeyRef:
@@ -40,30 +42,10 @@ spec:
             configMapKeyRef:
               key: celery-broker-url
               name: underground-config
-        - name: SHOWS_REDIS_HOST
-          valueFrom:
-            configMapKeyRef:
-              key: shows-redis-host
-              name: underground-config
-        - name: SHOWS_REDIS_DB
-          valueFrom:
-            configMapKeyRef:
-              key: shows-redis-db
-              name: underground-config
         - name: SENTRY_DSN
           valueFrom:
             secretKeyRef:
               key: sentry-dsn
-              name: underground-secrets
-        - name: GOOGLE_JSON_PATH
-          valueFrom:
-            secretKeyRef:
-              key: google-json-path
-              name: underground-secrets
-        - name: GOOGLE_PROJECT
-          valueFrom:
-            secretKeyRef:
-              key: google-project
               name: underground-secrets
         - name: STORAGE_PROVIDER
           valueFrom:
@@ -80,19 +62,26 @@ spec:
             secretKeyRef:
               key: storage-secret
               name: underground-secrets
+        - name: GOOGLE_JSON_PATH
+          valueFrom:
+            secretKeyRef:
+              key: google-json-path
+              name: underground-secrets
+        - name: GOOGLE_PROJECT
+          valueFrom:
+            secretKeyRef:
+              key: google-project
+              name: underground-secrets
         - name: STORAGE_CONTAINER
           valueFrom:
             secretKeyRef:
               key: storage-container
               name: underground-secrets
         image: gcr.io/alex-kerney/underground:0.7.7
-        name: web
-        ports:
-        - containerPort: 8000
-          name: gunicorn
+        name: celery
         resources:
           limits:
-            cpu: 400m
+            cpu: 800m
           requests:
             cpu: 10m
         volumeMounts:
