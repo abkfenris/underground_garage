@@ -1,89 +1,94 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: underground-celery
   labels:
     app: underground
+    name: underground-celery
     service: celery
     tier: backend
-    name: underground-celery
+  name: underground-celery
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: underground
+        name: underground-celery
         service: celery
         tier: backend
-        name: underground-celery
     spec:
+      containers:
+      - command:
+        - celery
+        - worker
+        - -A
+        - celery_worker.celery
+        - -l
+        - info
+        env:
+        - name: C_FORCE_ROOT
+          value: 'True'
+        - name: UNDERGROUND_CONFIG
+          value: production
+        - name: SHOWS_REDIS_HOST
+          value: underground-redis
+        - name: UNDERGROUND_DB
+          valueFrom:
+            secretKeyRef:
+              key: underground-db
+              name: underground-secrets
+        - name: CELERY_BROKER_URL
+          valueFrom:
+            configMapKeyRef:
+              key: celery-broker-url
+              name: underground-config
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              key: sentry-dsn
+              name: underground-secrets
+        - name: STORAGE_PROVIDER
+          valueFrom:
+            secretKeyRef:
+              key: storage-provider
+              name: underground-secrets
+        - name: STORAGE_KEY
+          valueFrom:
+            secretKeyRef:
+              key: storage-key
+              name: underground-secrets
+        - name: STORAGE_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: storage-secret
+              name: underground-secrets
+        - name: GOOGLE_JSON_PATH
+          valueFrom:
+            secretKeyRef:
+              key: google-json-path
+              name: underground-secrets
+        - name: GOOGLE_PROJECT
+          valueFrom:
+            secretKeyRef:
+              key: google-project
+              name: underground-secrets
+        - name: STORAGE_CONTAINER
+          valueFrom:
+            secretKeyRef:
+              key: storage-container
+              name: underground-secrets
+        image: gcr.io/alex-kerney/underground:0.7.5
+        name: celery
+        resources:
+          limits:
+            cpu: 800m
+          requests:
+            cpu: 10m
+        volumeMounts:
+        - mountPath: /google
+          name: google-config
+          readOnly: true
       volumes:
       - name: google-config
         secret:
           secretName: underground-service-account
-      containers:
-        - image: gcr.io/alex-kerney/underground:0.7.4
-          name: celery
-          resources:
-            requests:
-              cpu: 10m
-            limits:
-              cpu: 800m
-          command: ["celery", "worker", "-A", "celery_worker.celery", "-l", "info"]
-          volumeMounts:
-          - mountPath: /google
-            name: google-config
-            readOnly: true
-          env:
-            - name: C_FORCE_ROOT
-              value: 'True'
-            - name: UNDERGROUND_CONFIG
-              value: production
-            - name: SHOWS_REDIS_HOST
-              value: underground-redis
-            - name: UNDERGROUND_DB
-              valueFrom:
-                secretKeyRef:
-                  name: underground-secrets
-                  key: underground-db
-            - name: CELERY_BROKER_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: underground-config
-                  key: celery-broker-url
-            - name: SENTRY_DSN
-              valueFrom:
-                secretKeyRef:
-                  name: underground-secrets
-                  key: sentry-dsn
-            - name: STORAGE_PROVIDER
-              valueFrom:
-                secretKeyRef:
-                  name: underground-secrets
-                  key: storage-provider
-            - name: STORAGE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: underground-secrets
-                  key: storage-key
-            - name: STORAGE_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: underground-secrets
-                  key: storage-secret
-            - name: GOOGLE_JSON_PATH
-              valueFrom:
-                secretKeyRef:
-                  key: google-json-path
-                  name: underground-secrets
-            - name: GOOGLE_PROJECT
-              valueFrom:
-                secretKeyRef:
-                  key: google-project
-                  name: underground-secrets
-            - name: STORAGE_CONTAINER
-              valueFrom:
-                secretKeyRef:
-                  name: underground-secrets
-                  key: storage-container
-          

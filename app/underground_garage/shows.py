@@ -221,19 +221,19 @@ def updateshows():
     Get the current list of shows in the archive,
     then add the urls to the database
     """
-    with current_app.app_context():
-        print('Updating shows')
-        showlist = showsinarchive()
-        print('Found {num} shows'.format(num=len(showlist)))
-        for show in showlist:
-            s = Show.query.filter_by(url=show).first()
-            if s is None:
-                s = Show(url=show)
-                db.session.add(s)
-        print('Adding shows:')
-        for obj in db.session:
-            print(obj)
-        db.session.commit()
+    #with current_app.app_context():
+    print('Updating shows')
+    showlist = showsinarchive()
+    print('Found {num} shows'.format(num=len(showlist)))
+    for show in showlist:
+        s = Show.query.filter_by(url=show).first()
+        if s is None:
+            s = Show(url=show)
+            db.session.add(s)
+    print('Adding shows:')
+    for obj in db.session:
+        print(obj)
+    db.session.commit()
     without = showswithout()
     print(without)
     for show in without:
