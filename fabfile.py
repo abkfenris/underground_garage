@@ -40,7 +40,7 @@ def  _push(image, version):
     tag = image + ':' + str(version)
     if confirm('Push image {t} to gcloud?'.format(t=tag)):
         print('')
-        local('gcloud docker push {t}'.format(t=tag))
+        local('gcloud docker -- push {t}'.format(t=tag))
 
 
 def _git_tag(version):
@@ -53,11 +53,37 @@ def _git_tag(version):
         repo.create_tag(version, ref=commit)
 
 
+def _update_config(filename, tag):
+    """
+    Updates the config file for latest tag
+    """
+    with open(filename) as f:
+        config = yaml.safe_load(f)
+    
+    new_config = _update_config_image(copy.deepcopy(config), tag)
+    yaml_config = yaml.dump(new_config, default_flow_style=False)
+
+    print('New config:')
+    print('')
+    print(yaml_config)
+    print('')
+
+    if confirm('Write new config?'):
+        with open(filename, 'w') as f:
+            f.write(yaml_config)
+
+    print('')
+    if confirm('Update kubernetes with new config?'):
+        local('kubectl replace -f {config_path}'.format(config_path=filename))
+
+
+
 def deploy_web():
     """
     Deploy updated web container to kubernetes
     """
     config_path = 'k8s/web.yaml'
+    celery_path = 'k8s/celery.yaml'
 
     with open(config_path) as f:
         config = yaml.safe_load(f)
@@ -75,21 +101,12 @@ def deploy_web():
     print('')
 
     tag = image + ':' + str(new_version)
-    new_config = _update_config_image(copy.deepcopy(config), tag)
-
-    yaml_config = yaml.dump(new_config, default_flow_style=False)
-    print('New config:')
-    print('')
-    print(yaml_config)
+    
+    _update_config(config_path, tag)
+    
     print('')
 
-    if confirm('Write new config?'):
-        with open(config_path, 'w') as f:
-            f.write(yaml_config)
-
-    print('')
-    if confirm('Update kubernetes with new config?'):
-        local('kubectl replace -f {config_path}'.format(config_path=config_path))
+    _update_config(celery_path, tag)
 
     print('')
     _git_tag(new_version)

@@ -215,7 +215,7 @@ def combinelist(show_id=None, filename='list.mp3'):
     db.session.commit()
 
 
-@celery.task(rate_limit='1/h')
+@celery.task()
 def updateshows():
     """
     Get the current list of shows in the archive,
