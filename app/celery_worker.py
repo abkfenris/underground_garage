@@ -13,5 +13,5 @@ celery.conf.beat_schedule = {
     }
 }
 
-app = create_app(os.getenv('UNDERGROUND_ENV') or 'default')
+app = create_app(os.getenv('UNDERGROUND_CONFIG') or 'default')
 app.app_context().push()

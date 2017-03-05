@@ -18,7 +18,7 @@ class Config(object):
     GOOGLE_JSON_PATH = os.environ.get('GOOGLE_JSON_PATH')
     GOOGLE_PROJECT = os.environ.get('GOOGLE_PROJECT')
 
-    CELERYD_PREFETCH_MULTIPLIER = os.environ.get('CELERYD_PREFETCH_MULTIPLIER', 1)
+    worker_prefetch_multiplier = os.environ.get('CELERYD_PREFETCH_MULTIPLIER', 1)
 
     SHOWS_REDIS_HOST = os.environ.get('SHOWS_REDIS_HOST', 'localhost')
     SHOWS_REDIS_PORT = int(os.environ.get('SHOWS_REDIS_PORT', 6379))

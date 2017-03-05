@@ -3,11 +3,9 @@ version: '2'
 services:
   redis:
     restart: "always"
-    image: redis:alpine
+    image: redis:3.2-alpine
     env_file:
       - ./common.env
-    volumes:
-      - ./data/redis:/data
 
   postgres:
     restart: "always"
@@ -24,13 +22,16 @@ services:
     build: ./app
     expose:
       - "8000"
+    ports:
+    - "8000:8000"
     links:
       - redis:redis
       - postgres:postgres
-    command: "gunicorn --log-level debug -w 2 -b :8000 wsgi:app"
+    command: "python /usr/src/app/manage.py runserver -d -r -p 8000 --host=0.0.0.0" #"gunicorn --log-level debug -w 2 -b :8000 wsgi:app"
     volumes:
       - ./data/google_key:/google_key
       - ./app:/usr/src/app
+      - ./k8s/google:/google/google
     env_file:
       - ./common.env
 
@@ -43,6 +44,20 @@ services:
     command: "celery worker -A celery_worker.celery -l info"
     volumes:
       - ./data/google_key:/google_key
+      - ./k8s/google:/google/google
+    env_file:
+      - ./common.env
+  
+  celery-beat:
+    restart: "always"
+    build: ./app
+    links:
+      - redis:redis
+      - postgres:postgres
+    command: "celery beat -A celery_worker.celery -l info"
+    volumes:
+      - ./data/google_key:/google_key
+      - ./k8s/google:/google/google
     env_file:
       - ./common.env
 
@@ -54,11 +69,9 @@ services:
     links:
       - web:underground-web
 
-  flower:
-    image: placr/flower
-    env_file:
-      - ./common.env
-    links:
-      - redis:redis
-    ports:
-      - "5555:5555"
+  #flower:
+  #  image: placr/flower
+  #  env_file:
+  #    - ./common.env
+  #  links:
+  #    - redis:redis
