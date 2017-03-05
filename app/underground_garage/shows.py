@@ -183,7 +183,7 @@ def combinelist(show_id=None, filename='list.mp3'):
         r = requests.get(url, stream=True)
         if r.status_code != 200:
             while True:
-                print r.status_code
+                print(r.status_code)
                 time.sleep(10)
                 r = requests.get(url, stream=True)
                 if r.status_code == 200:
@@ -232,10 +232,10 @@ def updateshows():
                 db.session.add(s)
         print('Adding shows:')
         for obj in db.session:
-            print obj
+            print(obj)
         db.session.commit()
     without = showswithout()
-    print without
+    print(without)
     for show in without:
         updateshowdetails.delay(show.url)
 
