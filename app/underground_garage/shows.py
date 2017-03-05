@@ -7,7 +7,6 @@ import os
 
 import arrow
 from bs4 import BeautifulSoup
-from celery.task.schedules import crontab
 from flask import current_app
 from pydub import AudioSegment
 import requests

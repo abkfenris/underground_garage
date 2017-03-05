@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 import os
+
+from celery.task.schedules import crontab
+
 from underground_garage.app import celery, create_app
 from underground_garage import shows
 
