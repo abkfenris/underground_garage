@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: master
-        image: redis
+        image: redis:3.2-alpine
         resources:
           requests:
             cpu: 10m

@@ -8,7 +8,7 @@ metadata:
     tier: frontend
   name: underground-web
 spec:
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -55,6 +55,16 @@ spec:
             secretKeyRef:
               key: sentry-dsn
               name: underground-secrets
+        - name: GOOGLE_JSON_PATH
+          valueFrom:
+            secretKeyRef:
+              key: google-json-path
+              name: underground-secrets
+        - name: GOOGLE_PROJECT
+          valueFrom:
+            secretKeyRef:
+              key: google-project
+              name: underground-secrets
         - name: STORAGE_PROVIDER
           valueFrom:
             secretKeyRef:
@@ -75,7 +85,7 @@ spec:
             secretKeyRef:
               key: storage-container
               name: underground-secrets
-        image: gcr.io/alex-kerney/underground:0.6
+        image: gcr.io/alex-kerney/underground:0.7.4
         name: web
         ports:
         - containerPort: 8000
@@ -85,3 +95,11 @@ spec:
             cpu: 400m
           requests:
             cpu: 10m
+        volumeMounts:
+        - mountPath: /google
+          name: google-config
+          readOnly: true
+      volumes:
+      - name: google-config
+        secret:
+          secretName: underground-service-account

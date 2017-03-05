@@ -8,7 +8,7 @@ metadata:
     tier: backend
     name: underground-celery
 spec:
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
@@ -17,8 +17,12 @@ spec:
         tier: backend
         name: underground-celery
     spec:
+      volumes:
+      - name: google-config
+        secret:
+          secretName: underground-service-account
       containers:
-        - image: gcr.io/alex-kerney/underground:0.4
+        - image: gcr.io/alex-kerney/underground:0.7.4
           name: celery
           resources:
             requests:
@@ -26,11 +30,17 @@ spec:
             limits:
               cpu: 800m
           command: ["celery", "worker", "-A", "celery_worker.celery", "-l", "info"]
+          volumeMounts:
+          - mountPath: /google
+            name: google-config
+            readOnly: true
           env:
             - name: C_FORCE_ROOT
               value: 'True'
             - name: UNDERGROUND_CONFIG
               value: production
+            - name: SHOWS_REDIS_HOST
+              value: underground-redis
             - name: UNDERGROUND_DB
               valueFrom:
                 secretKeyRef:
@@ -61,8 +71,19 @@ spec:
                 secretKeyRef:
                   name: underground-secrets
                   key: storage-secret
+            - name: GOOGLE_JSON_PATH
+              valueFrom:
+                secretKeyRef:
+                  key: google-json-path
+                  name: underground-secrets
+            - name: GOOGLE_PROJECT
+              valueFrom:
+                secretKeyRef:
+                  key: google-project
+                  name: underground-secrets
             - name: STORAGE_CONTAINER
               valueFrom:
                 secretKeyRef:
                   name: underground-secrets
                   key: storage-container
+          
