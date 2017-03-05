@@ -84,6 +84,7 @@ def deploy_web():
     """
     config_path = 'k8s/web.yaml'
     celery_path = 'k8s/celery.yaml'
+    celery_beat_path = 'k8s/underground-celery-beat.yaml'
 
     with open(config_path) as f:
         config = yaml.safe_load(f)
@@ -107,6 +108,9 @@ def deploy_web():
     print('')
 
     _update_config(celery_path, tag)
+
+    print('')
+    _update_config(celery_beat_path, tag)
 
     print('')
     _git_tag(new_version)

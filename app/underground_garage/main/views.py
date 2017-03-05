@@ -55,7 +55,6 @@ def update():
 
     Update listing of shows
     """
-    shows.updateshows.delay()
     return redirect(url_for('.index'))
 
 
