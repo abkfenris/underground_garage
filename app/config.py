@@ -19,6 +19,8 @@ class Config(object):
     GOOGLE_PROJECT = os.environ.get('GOOGLE_PROJECT')
 
     worker_prefetch_multiplier = os.environ.get('CELERYD_PREFETCH_MULTIPLIER', 1)
+    task_time_limit = 600 # 10 min time limit for tasks. Most episodeds download in 4
+    worker_max_tasks_per_child = 5 # tasks before worker is replaced to keep memory down
 
     SHOWS_REDIS_HOST = os.environ.get('SHOWS_REDIS_HOST', 'localhost')
     SHOWS_REDIS_PORT = int(os.environ.get('SHOWS_REDIS_PORT', 6379))

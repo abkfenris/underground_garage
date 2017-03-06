@@ -29,6 +29,7 @@ def archivepages():
     """
     show_list = []
     index_r = requests.get(URL_STUB)
+    logger.info('Building list of archive pages')
     index_soup = BeautifulSoup(index_r.text, 'html.parser')
     for span in index_soup.findAll('span'):
         try:
@@ -46,6 +47,7 @@ def showlinks(archive_url):
     """
     r = requests.get(archive_url)
     soup = BeautifulSoup(r.text, 'html.parser')
+    logger.info('Getting list of shows from %s' % archive_url)
     links_to_shows = []
     for h4 in soup.findAll('h4'):
         if 'Shows' in str(h4.contents[0]):
