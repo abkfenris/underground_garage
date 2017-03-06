@@ -27,6 +27,7 @@ class Config(object):
     REQUESTS_NICE_REDIS_HOST = os.environ.get('SHOWS_REDIS_HOST', 'localhost')
     REQUESTS_NICE_REDIS_PORT = int(os.environ.get('REQUESTS_NICE_REDIS_PORT', 6379))
     REQUESTS_NICE_REDIS_DB = int(os.environ.get('SHOWS_REDIS_DB', 2))
+    SENTRY_DSN = os.environ.get('SENTRY_DSN')
 
 
 class DevelopmentConfig(Config):
@@ -43,7 +44,7 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('UNDERGROUND_DB')
-    SENTRY_DSN = os.environ.get('SENTRY_DSN')
+    
 
 config = {
     'development': DevelopmentConfig,

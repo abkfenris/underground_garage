@@ -8,6 +8,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from raven.contrib.flask import Sentry
+from raven.contrib.celery import register_signal, register_logger_signal
 from google.cloud import storage
 from google.oauth2 import service_account
 from werkzeug.contrib.fixers import ProxyFix
@@ -68,6 +69,7 @@ def create_app(config_name):
     stream = logging.StreamHandler()
     stream.setLevel(logging_map[log_level])
     logger.addHandler(stream)
+
 
     if config_name in ('docker', 'development', 'production'):
         sentry.init_app(app, logging=True, level=logging.INFO)

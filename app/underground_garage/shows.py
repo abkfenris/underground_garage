@@ -4,6 +4,7 @@ Utilities to get shows, and individual media files
 from collections import namedtuple
 import time
 import os
+import logging
 
 import arrow
 from bs4 import BeautifulSoup
@@ -17,6 +18,8 @@ from underground_garage.models import Show
 
 
 URL_STUB = 'http://undergroundgarage.com'
+
+logger = logging.getLogger(__name__)
 
 
 def archivepages():
@@ -48,22 +51,26 @@ def showlinks(archive_url):
         if 'Shows' in str(h4.contents[0]):
             archive_header = h4
             break
-    span = archive_header.findNext('span')
-    next_span = span
-    while True:
-        try:
-            next_span = next_span.next
-        except AttributeError:
-            break
-        try:
-            if next_span.name == 'a':
-                if 'Shows' in next_span.attrs['href'] or 'shows' in next_span.attrs['href']:
-                    url = URL_STUB + next_span.attrs['href']
-                    if url not in links_to_shows:
-                        links_to_shows.append(url)
-        except AttributeError:
-            pass
-    return links_to_shows
+    try:
+        span = archive_header.findNext('span')
+        next_span = span
+    except UnboundLocalError:
+        logger.error('Unable to find archive header %s' % archive_url)
+    else:
+        while True:
+            try:
+                next_span = next_span.next
+            except AttributeError:
+                logger.debug("next span does not have a next attribute %s" % archive_url)
+            try:
+                if next_span.name == 'a':
+                    if 'Shows' in next_span.attrs['href'] or 'shows' in next_span.attrs['href']:
+                        url = URL_STUB + next_span.attrs['href']
+                        if url not in links_to_shows:
+                            links_to_shows.append(url)
+            except AttributeError:
+                logger.debug('next_span does not have a link %s' % archive_url)
+        return links_to_shows
 
 
 def showsinarchive():
