@@ -11,7 +11,7 @@ from underground_garage import shows
 celery.conf.beat_schedule = {
     'update-1-hour': {
         'task': 'underground_garage.shows.updateshows',
-        'schedule': crontab(minute=0, hour='*/1')
+        'schedule': crontab(minute=0)
     }
 }
 

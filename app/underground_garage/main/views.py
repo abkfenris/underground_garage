@@ -22,7 +22,6 @@ def index():
 
     Index page with list of shows
     """
-    shows.updateshows.delay()
     return render_template('index.html', Show=Show)
 
 
