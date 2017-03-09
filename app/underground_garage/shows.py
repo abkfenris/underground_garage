@@ -84,7 +84,9 @@ def showsinarchive():
     """
     links = []
     for archive_url in archivepages():
-        links = links + showlinks(archive_url)
+        archive_links = showlinks(archive_url)
+        if archive_links:
+            links = links + archive_links
     return links
 
 

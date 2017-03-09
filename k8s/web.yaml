@@ -85,7 +85,7 @@ spec:
             secretKeyRef:
               key: storage-container
               name: underground-secrets
-        image: gcr.io/alex-kerney/underground:0.7.15
+        image: gcr.io/alex-kerney/underground:0.7.16
         name: web
         ports:
         - containerPort: 8000
