@@ -77,7 +77,7 @@ spec:
             secretKeyRef:
               key: storage-container
               name: underground-secrets
-        image: gcr.io/alex-kerney/underground:0.7.14
+        image: gcr.io/alex-kerney/underground:0.7.15
         name: celery
         resources:
           limits:

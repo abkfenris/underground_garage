@@ -58,12 +58,14 @@ def showlinks(archive_url):
         next_span = span
     except UnboundLocalError:
         logger.error('Unable to find archive header %s' % archive_url)
+        return None
     else:
         while True:
             try:
                 next_span = next_span.next
             except AttributeError:
                 logger.debug("next span does not have a next attribute %s" % archive_url)
+                return None
             try:
                 if next_span.name == 'a':
                     if 'Shows' in next_span.attrs['href'] or 'shows' in next_span.attrs['href']:
@@ -72,6 +74,7 @@ def showlinks(archive_url):
                             links_to_shows.append(url)
             except AttributeError:
                 logger.debug('next_span does not have a link %s' % archive_url)
+                return None
         return links_to_shows
 
 
