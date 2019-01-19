@@ -1,23 +1,23 @@
 # Everything needed in production
 
 # Flask
-Flask==0.12
-MarkupSafe==0.23
-Werkzeug==0.11.15
-Jinja2==2.9.5
-itsdangerous==0.24
+Flask==1.0.2
+MarkupSafe==1.1.0
+Werkzeug==0.14.1
+Jinja2==2.10
+itsdangerous==1.1.0
 
 # Database
-Flask-SQLAlchemy==2.2
-SQLAlchemy==1.1.6
+Flask-SQLAlchemy==2.3.2
+SQLAlchemy==1.2.16
 psycopg2
 
 # Migrations
-Flask-Migrate==2.0.3
+Flask-Migrate==2.3.1
 
 # Forms
 Flask-WTF==0.14.2
-WTForms==2.1
+WTForms==2.2.1
 
 # Deployment
 gunicorn>=19.1.1
@@ -26,7 +26,7 @@ gunicorn>=19.1.1
 Flask-Bootstrap
 
 # Auth
-Flask-Login==0.4.0
+Flask-Login==0.4.1
 Flask-Security
 Flask-Bcrypt==0.7.1
 py-bcrypt
